@@ -1,0 +1,108 @@
+Jamie Alaniz / Satkaran Tamber
+
+program_start is start state
+[] denotes non-terminals [all_lower_case]
+() denotes terminals (ALL_UPPER_CASE)
+
+
+[program_start]:
+		epsilon
+		| [function] [program_start]
+                  
+[function]:         
+		(FUNCTION) (IDENT) (SEMICOLON) (BEGIN_PARAMS) [declaration_loop] (END_PARAMS) (BEGIN_LOCALS) [declaration_loop] (END_LOCALS) (BEGIN_BODY) [statement_loop] (END_BODY)
+									
+[declaration_loop]: 
+		epsilon
+		| [declaration] (SEMICOLON) [declaration_loop]
+									
+[statement_loop]:
+		epsilon
+		| [statement] (SEMICOLON) [statement_loop] 
+									
+[declaration]:
+		(IDENT) [identifier_loop] (COLON) (INTEGER)
+		| (IDENT) [identifier_loop] (COLON) (ARRAY) (L_SQUARE_BRACKET) (NUMBER) (R_SQUARE_BRACKET) (OF) (INTEGER) 
+									
+[identifier_loop]:
+		epsilon
+		| (COMMA) (IDENT) [identifier_loop]
+									
+[statement]:  
+		[var] (ASSIGN) [expression]
+		| (IF) [bool_expr] (THEN) [statement_loop] (ENDIF) 
+		| (IF) [bool_expr] (THEN) [statement_loop] (ELSE) [statement_loop] (ENDIF) 
+		| (WHILE) [bool_expr] (BEGINLOOP) [statement_loop] (ENDLOOP) 
+		| (DO) (BEGINLOOP) [statement_loop] (ENDLOOP) (WHILE) [bool_expr] 
+		| (FOREACH) (IDENT) (IN) (IDENT) (BEGINLOOP) [statement_loop] (ENDLOOP)
+		| (READ) [var] [var_loop] 
+		| (WRITE) [var] [var_loop] 
+		| (CONTINUE) 
+		| (RETURN) [expression] 
+                  
+[var_loop]:
+		epsilon
+		| (COMMA) [var] [var_loop]
+                  
+[bool_expr]:
+		[relation_and_expr] 
+		| [bool_expr] (OR) [relation_and_expr]
+                  
+[relation_and_expr]:
+		[relation_expr1]
+		| [relation_and_expr] (AND) [relation_expr1] 
+
+                  
+[relation_expr1]:
+		[relation_expr2] 
+		| (NOT) [relation_expr2] 
+                  
+[relation_expr2]:  
+		[expression] [comp] [expression]
+		| (TRUE) 
+		| (FALSE) 
+		| (L_PAREN) [bool_expr] (R_PAREN) 
+                  
+[comp]:
+		(EQ) 
+		| (NEQ) 
+		| (LT) 
+		| (GT) 
+		| (LTE) 
+		| (GTE)
+                  
+[expression]:
+		[multiplicative_expr] [expr_addon]      
+		  
+[expr_addon]:
+		epsilon
+		| (SUB) [multiplicative_expr] [expr_addon] 
+		| (ADD) [multiplicative_expr] [expr_addon] 
+                  
+[multiplicative_expr]: 
+		[term] [mult_addon]
+                  
+[mult_addon]:
+		epsilon
+		| (MOD) [term] [mult_addon] 
+		| (DIV) [term] [mult_addon] 
+		| (MULT) [term] [mult_addon] 
+                  
+[term]: 
+		[sub_term] 
+		| (SUB) [sub_term] 
+		| (IDENT) (L_PAREN) (R_PAREN) 
+		| (IDENT) (L_PAREN) [expression] [expression_loop] (R_PAREN) 
+		
+[expression_loop]:
+		epsilon
+		| (COMMA) [expression] [expression_loop]
+                  
+[sub_term]:
+		[var] 
+		| (NUMBER) 
+		| (L_PAREN) [expression] (R_PAREN) 
+                  
+[var]: 
+		(IDENT) 
+		| (IDENT) (L_SQUARE_BRACKET) [expression] (R_SQUARE_BRACKET) 
